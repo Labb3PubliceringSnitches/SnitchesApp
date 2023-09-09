@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-//TEST2
+//TEST23
 
 // Add services to the container.
 builder.Services.AddRazorPages();
