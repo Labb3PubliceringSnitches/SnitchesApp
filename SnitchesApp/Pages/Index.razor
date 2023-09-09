@@ -1,0 +1,102 @@
+﻿@page "/"
+@using Newtonsoft.Json;
+@using SnitchesApp.Models;
+@inject HttpClient client;
+
+<MudContainer MaxWidth="MaxWidth.Medium" class="container-with-background">
+
+    <div class="d-flex justify-center">
+        <MudImage Fluid="true" ObjectPosition="ObjectPosition.Center" Height="200" Width="400" src="https://polisen.se/Areas/Polisen/Content/Images/Polisen.svg" />
+    </div>
+
+    <MudText Align="Align.Center" Typo="Typo.h4" Class="mt-10">Se de senaste brotten:</MudText>
+
+    <SearchCrimeByCity @ref="searchCrimeInCities" crimeListChanged="HandleCrimeListChanged"></SearchCrimeByCity>
+
+    @if (crimeList is not null && crimeList.Count > 0)
+    {
+        @foreach (var crime in crimeList.Skip(amountOfCrimesToShow * pageNumber).Take(amountOfCrimesToShow))
+        {
+            <MudCard Outlined="true" class="mb-4">
+                <MudCardContent>
+                    <MudText Typo="Typo.h4" Align="Align.Center">
+                        @{
+                            string[] nameSplit = crime.Name.Split(',');
+                            if (nameSplit.Length > 1)
+                            {
+                                string textAfterComma = string.Join(',', nameSplit[1..]);
+                                @textAfterComma
+                            }
+                        }
+                    </MudText>
+                    <MudText Typo="Typo.body2" Align="Align.Center" Class="mb-5">
+                        @{
+                            string[] nameSplit = crime.Name.Split(',');
+                            if (nameSplit.Length > 0)
+                            {
+                                string firstSegment = nameSplit[0].Trim(',');
+                                @firstSegment
+                            }
+                        }
+                    </MudText>
+                    <MudText Typo="Typo.body1" Align="Align.Center">@crime.Summary</MudText>
+                </MudCardContent>
+                <MudCardActions Class="justify-end">
+                    <MudLink Href="@($"https://polisen.se{crime.Url}")" Color="Color.Info" Target="_blank">Läs mer här!</MudLink>
+                </MudCardActions>
+            </MudCard>
+        }
+    }
+    else
+    {
+        <MudText Class="my-3">@message</MudText>
+    }
+
+    <div class="d-flex justify-center">
+        <MudButtonGroup Ali Color="Color.Primary" Variant="Variant.Text" OverrideStyles="_overrideStyles">
+            <MudButton Class="me-5" Color="Color.Info" Variant="Variant.Text" @onclick="(()=> ChangeToPreviousPage())" Disabled="@((amountOfCrimesToShow * pageNumber) == 0)">Föregående Sida</MudButton>
+            <MudButton Color="Color.Info" Variant="Variant.Text" @onclick="(()=>ChangeToNextPage())" Disabled=@((amountOfCrimesToShow * pageMultiplier) > crimeList.Count)>Nästa Sida</MudButton>
+        </MudButtonGroup>
+    </div>
+
+
+    <MudScrollToTop>
+        <MudFab Color="Color.Tertiary" Icon="@Icons.Material.Filled.ArrowCircleUp" />
+    </MudScrollToTop>
+</MudContainer>
+
+@code {
+
+    List<CityDTO> crimeList = new();
+    private bool _overrideStyles;
+    private string message { get; set; } = "Inga brott hittades.";
+    bool IsDisabled = false;
+
+    private SearchCrimeByCity searchCrimeInCities = new();
+
+    private int amountOfCrimesToShow = 10;
+    private int pageNumber = 0;
+    private int pageMultiplier = 1;
+
+    private void HandleCrimeListChanged(List<CityDTO> updatedCrimeList)
+    {
+        crimeList = updatedCrimeList;
+        pageNumber = 0;
+        pageMultiplier = 1;
+        amountOfCrimesToShow = 10;
+    }
+
+    private void ChangeToPreviousPage()
+    {
+        pageNumber -= 1;
+        pageMultiplier -= 1;
+
+    }
+    private void ChangeToNextPage()
+    {
+        pageNumber += 1;
+        pageMultiplier += 1;
+
+    }
+
+}
