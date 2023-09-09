@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Trigger Terraform Workflow
-        uses: peter-evans/repository-dispatch@v1
+        uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.SOURCE_PAT_ME }}
           repository: Labb3PubliceringSnitches/Terraform
