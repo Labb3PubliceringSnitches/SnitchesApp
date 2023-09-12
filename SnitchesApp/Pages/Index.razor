@@ -1,6 +1,9 @@
 ﻿@page "/"
 @using Newtonsoft.Json;
+@using System.Text
+@using System.Net.Http;
 @using SnitchesApp.Models;
+@inject HttpClient Http;
 @inject HttpClient client;
 
 <MudContainer MaxWidth="MaxWidth.Medium" class="container-with-background">
@@ -59,6 +62,18 @@
         </MudButtonGroup>
     </div>
 
+    <h2>Har du sett något?</h2>
+
+    <MudTextField @bind-Value="userInput.SnitchStory"  />
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="SendStory">Skicka</MudButton>
+
+    @if (responseMessage != null)
+    {
+        <p>@responseMessage</p>
+    }
+
+
+
 
     <MudScrollToTop>
         <MudFab Color="Color.Tertiary" Icon="@Icons.Material.Filled.ArrowCircleUp" />
@@ -97,6 +112,30 @@
         pageNumber += 1;
         pageMultiplier += 1;
 
+    }
+
+
+    private CreateSnitch userInput = new CreateSnitch();
+    private string responseMessage;
+
+    private async Task SendStory()
+    {
+        var jsonPayload = JsonConvert.SerializeObject(userInput);
+        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+        var response = await client.PostAsync("http://localhost:7068/api/snitchstories", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            responseMessage = "Tack!";
+        }
+        else
+        {
+            responseMessage = $"Failed to send story. Status code: {response.StatusCode}";
+        }
+
+        userInput.SnitchStory = string.Empty;
+        
     }
 
 }
