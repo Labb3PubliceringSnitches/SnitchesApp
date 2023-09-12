@@ -123,7 +123,9 @@
         var jsonPayload = JsonConvert.SerializeObject(userInput);
         var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-        var response = await client.PostAsync("http://localhost:7068/api/snitchstories", content);
+        string apiSecret = Environment.GetEnvironmentVariable("Function_default_key");
+        string functionName = Environment.GetEnvironmentVariable("Function_app_name");
+        var response = await client.PostAsync($"https://{functionName}.azurewebsites.net/api/snitchstories?code={apiSecret}", content);
 
         if (response.IsSuccessStatusCode)
         {
