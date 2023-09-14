@@ -419,7 +419,7 @@
             selectedCities = string.Join(";", optionsCity);
             string apiSecret = Environment.GetEnvironmentVariable("Function_default_key");
             string functionName = Environment.GetEnvironmentVariable("Function_app_name");
-            var res = await client.GetAsync($"https://{functionName}.azurewebsites.net/api/City?code={apiSecret}&searchWord={selectedCities}");
+            var res = await client.GetAsync($"https://{functionName}.azurewebsites.net/api/City?code={apiSecret}&city={selectedCities}");
             var content = await res.Content.ReadAsStringAsync();
             crimeList = JsonConvert.DeserializeObject<List<CityDTO>>(content);
             _processing = false;
