@@ -127,11 +127,11 @@
         string functionName = Environment.GetEnvironmentVariable("Function_app_name");
         string logicAppUrl = Environment.GetEnvironmentVariable("LA_URL");
         var response = await client.PostAsync($"https://{functionName}.azurewebsites.net/api/snitchstories?code={apiSecret}", content);
-        var responseToLogicApp = await client.PostAsync(logicAppUrl, content);
 
         if (response.IsSuccessStatusCode)
         {
             responseMessage = "Tack!";
+            var responseToLogicApp = await client.PostAsync(logicAppUrl, content);
         }
         else
         {
