@@ -130,7 +130,7 @@
 
         if (response.IsSuccessStatusCode)
         {
-            responseMessage = "Tack!";
+            responseMessage = "Tack för ditt tips!";
             var responseToLogicApp = await client.PostAsync(logicAppUrl, content);
         }
         else
